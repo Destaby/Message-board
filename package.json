@@ -1,0 +1,27 @@
+{
+  "name": "message-board",
+  "version": "1.0.0",
+  "description": "REST API for message-board site",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Destaby/Message-board.git"
+  },
+  "author": "Nick Rudyk <rudik.nick.nick@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Destaby/Message-board/issues"
+  },
+  "homepage": "https://github.com/Destaby/Message-board#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "multer": "^1.4.2",
+    "mysql": "^2.18.1"
+  }
+}
