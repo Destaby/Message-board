@@ -29,10 +29,7 @@ const getFullItemsInfo = items => new Promise(resolve => {
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const [item] = await db.select('items', ['*'], { id });
-  if (!item) {
-    res.status(404);
-    return res.end();
-  }
+  if (!item) return res.status(404).end();
   const [user] = await db.select('users', ['id', 'phone', 'name', 'email'], {
     id: item.user_id,
   });
@@ -48,31 +45,19 @@ router.put('/:id', async (req, res) => {
   const [user] = await db.select('users', ['id', 'phone', 'name', 'email'], {
     token,
   });
-  if (!user) {
-    res.status(401);
-    return res.end();
-  }
+  if (!user) return res.status(401).end();
   const { id } = req.params;
   const [item] = await db.select('items', ['*'], { id });
-  if (!item) {
-    res.status(404);
-    return res.end();
-  }
-  if (item.user_id !== user.id) {
-    res.status(403);
-    return res.end();
-  }
+  if (!item) return res.status(404).end();
+  if (item.user_id !== user.id) return res.status(403).end();
   const { title, price } = req.body;
   if (!title && !price) return res.end();
-  if (title && title.length < 3) {
-    res.status(422);
-    return res.json([
+  if (title && title.length < 3) return res.status(422).json([
       {
         field: 'title',
         message: 'Title should contain at least 3 characters',
       },
     ]);
-  }
   db.update(
     'items',
     { title: title || item.title, price: price || item.price },
@@ -108,16 +93,10 @@ router.post('/', async (req, res) => {
   const [user] = await db.select('users', ['id', 'phone', 'name', 'email'], {
     token,
   });
-  if (!user) {
-    res.status(401);
-    return res.end();
-  }
+  if (!user) return res.status(401).end();
   const { title, price } = req.body;
   const errors = err.itemVal(title, price);
-  if (errors.length) {
-    res.status(422);
-    return res.json(errors);
-  }
+  if (errors.length) return res.status(422).json(errors);
   const time = Math.floor(new Date().getTime() / 1000);
   await db.insert('items', {
     title,
@@ -145,26 +124,14 @@ router.post('/:id/image', upload.single('image'), async (req, res) => {
   const [user] = await db.select('users', ['id', 'phone', 'name', 'email'], {
     token,
   });
-  if (!user) {
-    res.status(401);
-    return res.end();
-  }
+  if (!user) return res.status(401).end();
   const { id } = req.params;
   const [item] = await db.select('items', ['*'], { id });
-  if (!item) {
-    res.status(404);
-    return res.end();
-  }
-  if (item.user_id !== user.id) {
-    res.status(403);
-    return res.end();
-  }
+  if (!item) return res.status(404).end();
+  if (item.user_id !== user.id) return res.status(403).end();
   const { originalname, size } = req.file;
   const errors = err.imageVal(originalname, size);
-  if (errors.length) {
-    res.status(422);
-    return res.json(errors);
-  }
+  if (errors.length) return res.status(422).json(errors);
   return res.json({
     ...item,
     price: Math.round(item.price * 100) / 100,
@@ -177,20 +144,11 @@ router.delete('/:id/image', async (req, res) => {
   const [user] = await db.select('users', ['id', 'phone', 'name', 'email'], {
     token,
   });
-  if (!user) {
-    res.status(401);
-    return res.end();
-  }
+  if (!user) return res.status(401).end();
   const { id } = req.params;
   const [item] = await db.select('items', ['*'], { id });
-  if (!item) {
-    res.status(404);
-    return res.end();
-  }
-  if (item.user_id !== user.id) {
-    res.status(403);
-    return res.end();
-  }
+  if (!item) return res.status(404).end();
+  if (item.user_id !== user.id) return res.status(403).end();
   db.delete('items', { id });
   res.end();
 });

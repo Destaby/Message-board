@@ -8,10 +8,7 @@ const generateToken = require('../helpers/genToken');
 router.post('/', (req, res) => {
   const { phone, name, email, password } = req.body;
   const errors = err.reqErrors(phone, email, password);
-  if (errors.length) {
-    res.status(422);
-    return res.json(errors);
-  }
+  if (errors.length) return res.status(422).json(errors);
   const token = generateToken();
   db.insert('users', { phone: phone || '', name, email, password, token });
   res.json({ token });
@@ -22,10 +19,7 @@ router.get('/me', async (req, res) => {
   const [user] = await db.select('users', ['id', 'phone', 'name', 'email'], {
     token,
   });
-  if (!user) {
-    res.status(401);
-    return res.end();
-  }
+  if (!user) return res.status(401).end();
   res.json(user);
 });
 
@@ -36,10 +30,7 @@ router.put('/me', async (req, res) => {
   const [user] = await db.select('users', ['id', 'password'], {
     token,
   });
-  if (!user) {
-    res.status(401);
-    return res.end();
-  }
+  if (!user) return res.status(401).end();
   const { errors, newUpdates } = err.updUser(
     phone,
     email,
@@ -48,10 +39,7 @@ router.put('/me', async (req, res) => {
     user,
     updates
   );
-  if (errors && errors.length) {
-    res.status(422);
-    return res.json(errors);
-  }
+  if (errors && errors.length) return res.status(422).json(errors);
   db.update('users', newUpdates, { token });
   res.json({ id: user.id, phone, name, email });
 });
@@ -61,10 +49,7 @@ router.get('/:id', async (req, res) => {
   const [user] = await db.select('users', ['phone', 'name', 'email'], {
     id,
   });
-  if (!user) {
-    res.status(404);
-    return res.end();
-  }
+  if (!user) return res.status(404).end();
   const { phone, name, email } = user;
   res.json({ id, phone, name, email });
 });
